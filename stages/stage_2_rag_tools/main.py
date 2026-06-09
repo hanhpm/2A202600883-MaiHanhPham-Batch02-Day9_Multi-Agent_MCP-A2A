@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 from langchain_core.tools import tool
 
+from common.day8_rag import retrieve_day8_context, format_context
 from common.llm import get_llm
 
 # ---------------------------------------------------------------------------
@@ -91,6 +92,10 @@ LEGAL_KNOWLEDGE = [
 @tool
 def search_legal_database(query: str) -> str:
     """Search the legal knowledge base for relevant statutes, case law, and legal principles."""
+    day8_results = retrieve_day8_context(query, top_k=3)
+    if day8_results:
+        return format_context(day8_results)
+
     query_words = set(query.lower().split())
     scored = []
     for entry in LEGAL_KNOWLEDGE:

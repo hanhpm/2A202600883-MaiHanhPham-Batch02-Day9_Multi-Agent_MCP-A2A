@@ -24,7 +24,7 @@ uv run python stages/stage_2_rag_tools/main.py
 uv run python stages/stage_3_single_agent/main.py
 
 # Stage 4: Multi-Agent (in-process)
-uv run python stages/stage_4_milti_agent/main.py
+uv run python stages/stage_4_multi_agent/main.py
 ```
 
 ### Chạy Stage 5 (Distributed)

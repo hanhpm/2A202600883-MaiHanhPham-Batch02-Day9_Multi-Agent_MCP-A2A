@@ -132,6 +132,21 @@ cp .env.example .env
 uv run python test_client.py
 ```
 
+On Windows PowerShell:
+
+```powershell
+# Start all 5 services and write logs to .\logs\
+.\start_all.ps1
+
+# In another terminal, send a test question
+.\.venv\Scripts\python.exe test_client.py
+```
+
+The Law, Tax, and Compliance agents can reuse the Day 8 RAG corpus from the
+sibling project `2A202600883-MaiHanhPham-Day08_RAG_pipeline_cohort2`. The shared
+retriever reads cleaned markdown under `data/standardized/` and falls back
+gracefully if that project is not present.
+
 ### Run Individual Stage Demos
 
 No servers needed — each demo runs as a standalone script:

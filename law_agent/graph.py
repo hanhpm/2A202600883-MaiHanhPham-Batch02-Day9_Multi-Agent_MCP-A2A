@@ -17,6 +17,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.constants import Send
 from langgraph.graph import END, StateGraph
 
+from common.day8_rag import search_day8_rag
 from common.llm import get_llm
 
 logger = logging.getLogger(__name__)
@@ -54,15 +55,18 @@ class LawState(TypedDict):
 async def analyze_law(state: LawState) -> dict:
     """LLM analysis from a contract / general law perspective."""
     llm = get_llm()
+    day8_context = search_day8_rag(state["question"], top_k=4)
     messages = [
         SystemMessage(
             content=(
                 "You are a senior corporate litigation attorney specialising in contract law, "
                 "tort law, and general business law. Analyse the legal aspects of the question "
-                "thoroughly, covering relevant statutes, case law principles, and liability exposure."
+                "thoroughly, covering relevant statutes, case law principles, and liability exposure. "
+                "Use the provided Day 8 RAG context when it is relevant, and cite it as [S1], [S2], etc. "
+                "If the context does not support a claim, say it is general legal analysis."
             )
         ),
-        HumanMessage(content=state["question"]),
+        HumanMessage(content=f"Question:\n{state['question']}\n\nDay 8 RAG context:\n{day8_context}"),
     ]
     result = await llm.ainvoke(messages)
     return {"law_analysis": result.content}

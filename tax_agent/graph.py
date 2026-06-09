@@ -6,8 +6,10 @@ No tools — it answers purely from LLM knowledge.
 
 from __future__ import annotations
 
+from langchain_core.tools import tool
 from langgraph.prebuilt import create_react_agent
 
+from common.day8_rag import search_day8_rag
 from common.llm import get_llm
 
 TAX_SYSTEM_PROMPT = """You are a specialist tax attorney and CPA with expertise in:
@@ -30,9 +32,19 @@ When answering, be precise about:
 4. The distinction between the company's liability and individual liability
    for executives who directed the evasion
 
+Use the `search_legal_rag` tool before giving a substantive answer. If the Day 8
+corpus is not directly relevant to tax law, say so and continue with general tax
+analysis.
+
 Always note that your response is for educational purposes and the user
 should consult a licensed attorney for specific legal advice.
 """
+
+
+@tool
+def search_legal_rag(query: str) -> str:
+    """Search the Day 8 Vietnamese legal/news RAG corpus for relevant context."""
+    return search_day8_rag(query, top_k=4)
 
 
 def create_graph():
@@ -40,7 +52,7 @@ def create_graph():
     llm = get_llm()
     graph = create_react_agent(
         model=llm,
-        tools=[],
+        tools=[search_legal_rag],
         prompt=TAX_SYSTEM_PROMPT,
     )
     return graph

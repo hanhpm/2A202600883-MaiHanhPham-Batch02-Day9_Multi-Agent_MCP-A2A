@@ -6,8 +6,10 @@ No tools — it answers purely from LLM knowledge.
 
 from __future__ import annotations
 
+from langchain_core.tools import tool
 from langgraph.prebuilt import create_react_agent
 
+from common.day8_rag import search_day8_rag
 from common.llm import get_llm
 
 COMPLIANCE_SYSTEM_PROMPT = """You are a senior regulatory compliance officer and corporate attorney
@@ -32,9 +34,19 @@ When answering, be precise about:
 4. Mitigating factors: voluntary disclosure, cooperation, remediation, compliance programs
 5. Cross-border regulatory exposure for multinational companies
 
+Use the `search_legal_rag` tool before giving a substantive answer. If the Day 8
+corpus is not directly relevant to the compliance question, say so and continue
+with general regulatory analysis.
+
 Always note that your response is for educational purposes and the user
 should consult a licensed attorney for specific compliance advice.
 """
+
+
+@tool
+def search_legal_rag(query: str) -> str:
+    """Search the Day 8 Vietnamese legal/news RAG corpus for relevant context."""
+    return search_day8_rag(query, top_k=4)
 
 
 def create_graph():
@@ -42,7 +54,7 @@ def create_graph():
     llm = get_llm()
     graph = create_react_agent(
         model=llm,
-        tools=[],
+        tools=[search_legal_rag],
         prompt=COMPLIANCE_SYSTEM_PROMPT,
     )
     return graph
