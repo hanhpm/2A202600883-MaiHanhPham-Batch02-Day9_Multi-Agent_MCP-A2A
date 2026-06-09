@@ -12,6 +12,7 @@ from a2a.server.events import EventQueue
 from a2a.server.tasks import TaskUpdater
 from a2a.types import Part, TextPart
 
+from common.trace import emit_event
 from customer_agent.graph import build_graph
 
 logger = logging.getLogger(__name__)
@@ -38,6 +39,14 @@ class CustomerAgentExecutor(AgentExecutor):
         updater = TaskUpdater(event_queue, task_id, context_id)
         await updater.submit()
         await updater.start_work()
+        await emit_event(
+            trace_id=trace_id,
+            context_id=context_id,
+            agent="Customer Agent",
+            event="agent.start",
+            detail="Received user question and preparing delegate tool",
+            status="running",
+        )
 
         try:
             # Build a per-request graph so the tool closure captures this request's IDs
@@ -78,10 +87,27 @@ class CustomerAgentExecutor(AgentExecutor):
                 parts=[Part(root=TextPart(text=answer))],
                 name="legal_response",
             )
+            await emit_event(
+                trace_id=trace_id,
+                context_id=context_id,
+                agent="Customer Agent",
+                event="agent.complete",
+                detail="Final response returned to the user",
+                status="done",
+                data={"chars": len(answer)},
+            )
             await updater.complete()
 
         except Exception as exc:
             logger.exception("CustomerAgent execution error: %s", exc)
+            await emit_event(
+                trace_id=trace_id,
+                context_id=context_id,
+                agent="Customer Agent",
+                event="agent.error",
+                detail=str(exc),
+                status="error",
+            )
             await updater.failed(
                 updater.new_agent_message(
                     parts=[Part(root=TextPart(text=f"Request failed: {exc}"))]

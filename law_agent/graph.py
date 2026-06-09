@@ -19,6 +19,7 @@ from langgraph.graph import END, StateGraph
 
 from common.day8_rag import search_day8_rag
 from common.llm import get_llm
+from common.trace import emit_event
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,14 @@ class LawState(TypedDict):
 
 async def analyze_law(state: LawState) -> dict:
     """LLM analysis from a contract / general law perspective."""
+    await emit_event(
+        trace_id=state["trace_id"],
+        context_id=state["context_id"],
+        agent="Law Agent",
+        event="graph.node",
+        detail="analyze_law: retrieving Day 8 context and asking LLM",
+        tool="search_day8_rag + ChatOpenAI",
+    )
     llm = get_llm()
     day8_context = search_day8_rag(state["question"], top_k=4)
     messages = [
@@ -84,6 +93,14 @@ async def check_routing(state: LawState) -> dict:
         return {"needs_tax": False, "needs_compliance": False}
 
     llm = get_llm()
+    await emit_event(
+        trace_id=state["trace_id"],
+        context_id=state["context_id"],
+        agent="Law Agent",
+        event="graph.node",
+        detail="check_routing: deciding whether Tax and Compliance specialists are needed",
+        tool="ChatOpenAI JSON routing",
+    )
     messages = [
         SystemMessage(
             content=(
@@ -116,6 +133,15 @@ async def check_routing(state: LawState) -> dict:
     needs_tax = bool(parsed.get("needs_tax", True))
     needs_compliance = bool(parsed.get("needs_compliance", True))
     logger.info("Routing decision: needs_tax=%s needs_compliance=%s", needs_tax, needs_compliance)
+    await emit_event(
+        trace_id=state["trace_id"],
+        context_id=state["context_id"],
+        agent="Law Agent",
+        event="route.decision",
+        detail=f"needs_tax={needs_tax}, needs_compliance={needs_compliance}",
+        status="done",
+        data={"needs_tax": needs_tax, "needs_compliance": needs_compliance},
+    )
     return {"needs_tax": needs_tax, "needs_compliance": needs_compliance}
 
 
@@ -142,6 +168,14 @@ async def call_tax(state: LawState) -> dict:
     from common.registry_client import discover
 
     try:
+        await emit_event(
+            trace_id=state["trace_id"],
+            context_id=state["context_id"],
+            agent="Law Agent",
+            event="delegate.tax",
+            detail="Discovering and calling Tax Agent",
+            tool="Registry discover + A2A",
+        )
         endpoint = await discover("tax_question")
         result = await delegate(
             endpoint=endpoint,
@@ -163,6 +197,14 @@ async def call_compliance(state: LawState) -> dict:
     from common.registry_client import discover
 
     try:
+        await emit_event(
+            trace_id=state["trace_id"],
+            context_id=state["context_id"],
+            agent="Law Agent",
+            event="delegate.compliance",
+            detail="Discovering and calling Compliance Agent",
+            tool="Registry discover + A2A",
+        )
         endpoint = await discover("compliance_question")
         result = await delegate(
             endpoint=endpoint,
@@ -180,6 +222,14 @@ async def call_compliance(state: LawState) -> dict:
 
 async def aggregate(state: LawState) -> dict:
     """Combine law_analysis, tax_result, and compliance_result into a final answer."""
+    await emit_event(
+        trace_id=state["trace_id"],
+        context_id=state["context_id"],
+        agent="Law Agent",
+        event="graph.node",
+        detail="aggregate: combining all specialist analyses",
+        tool="ChatOpenAI synthesis",
+    )
     llm = get_llm()
 
     sections: list[str] = []

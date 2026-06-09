@@ -10,6 +10,7 @@ from a2a.server.events import EventQueue
 from a2a.server.tasks import TaskUpdater
 from a2a.types import Part, TextPart
 
+from common.trace import emit_event
 from law_agent.graph import create_graph
 
 logger = logging.getLogger(__name__)
@@ -37,6 +38,14 @@ class LawAgentExecutor(AgentExecutor):
         updater = TaskUpdater(event_queue, task_id, context_id)
         await updater.submit()
         await updater.start_work()
+        await emit_event(
+            trace_id=trace_id,
+            context_id=context_id,
+            agent="Law Agent",
+            event="agent.start",
+            detail="Started legal orchestration StateGraph",
+            status="running",
+        )
 
         try:
             result = await _graph.ainvoke(
@@ -66,10 +75,27 @@ class LawAgentExecutor(AgentExecutor):
                 parts=[Part(root=TextPart(text=answer))],
                 name="legal_analysis",
             )
+            await emit_event(
+                trace_id=trace_id,
+                context_id=context_id,
+                agent="Law Agent",
+                event="agent.complete",
+                detail="Aggregated legal, tax, and compliance analysis",
+                status="done",
+                data={"chars": len(answer)},
+            )
             await updater.complete()
 
         except Exception as exc:
             logger.exception("LawAgent execution error: %s", exc)
+            await emit_event(
+                trace_id=trace_id,
+                context_id=context_id,
+                agent="Law Agent",
+                event="agent.error",
+                detail=str(exc),
+                status="error",
+            )
             await updater.failed(
                 updater.new_agent_message(
                     parts=[Part(root=TextPart(text=f"Legal analysis failed: {exc}"))]

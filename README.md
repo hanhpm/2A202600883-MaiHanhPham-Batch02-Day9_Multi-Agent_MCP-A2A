@@ -135,12 +135,23 @@ uv run python test_client.py
 On Windows PowerShell:
 
 ```powershell
-# Start all 5 services and write logs to .\logs\
+# Terminal 1: start the interactive UI
+.\start_ui.ps1
+
+# Terminal 2: start all 5 services and write logs to .\logs\
 .\start_all.ps1
 
-# In another terminal, send a test question
+# Open the UI
+# http://localhost:8000
+
+# Optional CLI test
 .\.venv\Scripts\python.exe test_client.py
 ```
+
+The UI lets users enter a legal question, watch the live A2A trace, and switch
+between the learning modes for diagrams 02-09: A2A vs traditional agents,
+protocol details, system architecture, Law Agent graph, request flow, A2A intro,
+core concepts, and interaction flow.
 
 The Law, Tax, and Compliance agents can reuse the Day 8 RAG corpus from the
 sibling project `2A202600883-MaiHanhPham-Day08_RAG_pipeline_cohort2`. The shared

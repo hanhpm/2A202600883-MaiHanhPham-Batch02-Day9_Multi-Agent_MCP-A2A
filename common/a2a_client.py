@@ -11,6 +11,8 @@ from uuid import uuid4
 
 import httpx
 
+from common.trace import emit_event
+
 from a2a.client import A2AClient
 from a2a.types import (
     AgentCard,
@@ -44,6 +46,15 @@ async def delegate(
     Returns:
         The agent's text response, or an empty string if none could be extracted.
     """
+    await emit_event(
+        trace_id=trace_id,
+        context_id=context_id,
+        agent="A2A Client",
+        event="delegate.start",
+        detail=f"Sending question to {endpoint}",
+        tool="A2AClient.send_message",
+        data={"endpoint": endpoint, "depth": depth},
+    )
     async with httpx.AsyncClient(timeout=300.0) as http_client:
         # Fetch agent card
         card_url = f"{endpoint}/.well-known/agent.json"
@@ -79,7 +90,18 @@ async def delegate(
         response = await client.send_message(request)
 
         # Extract text from SendMessageResponse
-        return _extract_text(response)
+        text = _extract_text(response)
+        await emit_event(
+            trace_id=trace_id,
+            context_id=context_id,
+            agent="A2A Client",
+            event="delegate.complete",
+            detail=f"Received {len(text)} characters from {endpoint}",
+            tool="A2AClient.send_message",
+            status="done",
+            data={"endpoint": endpoint, "chars": len(text)},
+        )
+        return text
 
 
 def _extract_text(response: object) -> str:

@@ -1,5 +1,6 @@
 param(
-    [string]$PythonPath = ""
+    [string]$PythonPath = "",
+    [string]$TraceEventUrl = "http://localhost:8000/api/trace"
 )
 
 $ErrorActionPreference = "Stop"
@@ -18,8 +19,14 @@ if (-not $PythonPath) {
 
 $LogDir = Join-Path $ProjectRoot "logs"
 New-Item -ItemType Directory -Force -Path $LogDir | Out-Null
+$env:TRACE_EVENT_URL = $TraceEventUrl
 
-$Processes = New-Object System.Collections.Generic.List[System.Diagnostics.Process]
+$Processes = New-Object System.Collections.Generic.List[object]
+
+function Test-PortListening {
+    param([int]$Port)
+    return [bool](Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue)
+}
 
 function Start-AgentService {
     param(
@@ -31,6 +38,12 @@ function Start-AgentService {
 
     $OutLogFile = Join-Path $LogDir "$Name.out.log"
     $ErrLogFile = Join-Path $LogDir "$Name.err.log"
+
+    if (Test-PortListening -Port $Port) {
+        Write-Host "$Name already appears to be running on port $Port. Skipping start."
+        return
+    }
+
     Write-Host "Starting $Name on port $Port..."
     $Process = Start-Process `
         -FilePath $PythonPath `
@@ -40,7 +53,11 @@ function Start-AgentService {
         -RedirectStandardError $ErrLogFile `
         -WindowStyle Hidden `
         -PassThru
-    $Processes.Add($Process)
+    $Processes.Add([pscustomobject]@{
+        Name = $Name
+        Port = $Port
+        Process = $Process
+    })
     Start-Sleep -Seconds $DelaySeconds
 }
 
@@ -60,6 +77,7 @@ try {
     Write-Host "  Compliance Agent: http://localhost:10103"
     Write-Host ""
     Write-Host "Logs are in: $LogDir"
+    Write-Host "Trace events are sent to: $TraceEventUrl"
     Write-Host "Run a test query with:"
     Write-Host "  & `"$PythonPath`" test_client.py"
     Write-Host ""
@@ -67,9 +85,11 @@ try {
 
     while ($true) {
         Start-Sleep -Seconds 2
-        foreach ($Process in @($Processes)) {
-            if ($Process.HasExited) {
-                Write-Warning "$($Process.ProcessName) exited with code $($Process.ExitCode). Check logs in $LogDir."
+        foreach ($Record in @($Processes)) {
+            $Process = $Record.Process
+            if ($Process -and $Process.HasExited) {
+                Write-Warning "$($Record.Name) on port $($Record.Port) exited with code $($Process.ExitCode). Check logs in $LogDir."
+                [void]$Processes.Remove($Record)
             }
         }
     }
@@ -77,7 +97,8 @@ try {
 finally {
     Write-Host ""
     Write-Host "Stopping services..."
-    foreach ($Process in $Processes) {
+    foreach ($Record in $Processes) {
+        $Process = $Record.Process
         if ($Process -and -not $Process.HasExited) {
             Stop-Process -Id $Process.Id -Force
         }

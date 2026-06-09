@@ -12,6 +12,7 @@ from a2a.server.events import EventQueue
 from a2a.server.tasks import TaskUpdater
 from a2a.types import Part, TextPart
 
+from common.trace import emit_event
 from compliance_agent.graph import create_graph
 
 logger = logging.getLogger(__name__)
@@ -45,6 +46,14 @@ class ComplianceAgentExecutor(AgentExecutor):
         updater = TaskUpdater(event_queue, task_id, context_id)
         await updater.submit()
         await updater.start_work()
+        await emit_event(
+            trace_id=trace_id,
+            context_id=context_id,
+            agent="Compliance Agent",
+            event="agent.start",
+            detail="Started compliance specialist ReAct agent",
+            status="running",
+        )
 
         try:
             result = await _get_graph().ainvoke(
@@ -67,10 +76,27 @@ class ComplianceAgentExecutor(AgentExecutor):
                 parts=[Part(root=TextPart(text=answer))],
                 name="compliance_analysis",
             )
+            await emit_event(
+                trace_id=trace_id,
+                context_id=context_id,
+                agent="Compliance Agent",
+                event="agent.complete",
+                detail="Compliance specialist response completed",
+                status="done",
+                data={"chars": len(answer)},
+            )
             await updater.complete()
 
         except Exception as exc:
             logger.exception("ComplianceAgent execution error: %s", exc)
+            await emit_event(
+                trace_id=trace_id,
+                context_id=context_id,
+                agent="Compliance Agent",
+                event="agent.error",
+                detail=str(exc),
+                status="error",
+            )
             await updater.failed(
                 updater.new_agent_message(
                     parts=[Part(root=TextPart(text=f"Compliance analysis failed: {exc}"))]
