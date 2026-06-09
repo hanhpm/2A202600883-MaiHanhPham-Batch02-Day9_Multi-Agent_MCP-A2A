@@ -1,0 +1,84 @@
+{
+  "question": "Luật phòng chống ma túy quy định gì về cai nghiện?",
+  "answer": "Dưới đây là câu trả lời tổng hợp theo mô hình Supervisor - Workers:\n- Supervisor phân loại câu hỏi là: legal.\n- Các worker đã truy xuất và lọc các nguồn liên quan trong corpus Day 8.\n\n--- title: \"Nghị định 116/2021/NĐ-CP về cai nghiện ma túy\" source_url: \"https://vanban.chinhphu.vn/?docid=204866&pageid=27160\" crawled_at: \"2026-06-08T04:54:26.093305+00:00\" source_type: \"legal_web_text\" html_title: \"Nghị định số 116/2021/NĐ-CP của Chính phủ: Quy định chi tiết một số điều của Luật Phòng, chống ma túy, Luật Xử lý vi phạm hành chính về cai ngh [S1].\n## (Dân trí) - Theo luật sư, người thực hiện hành vi mua bán ma túy là lỗi cố ý, người phạm tội biết rõ thứ mình mua bán là chất cấm, biết rõ việc mua bán ma túy là trái pháp luật nhưng vẫn thực hiện. Công an quận Đống Đa, TP Hà Nội, vừa ra quyết định khởi tố bị can đối với Bùi Thị Lệ Hằng (48 tuổi, ở quận Đống Đa) về tội Mua bán trái phép chất ma túy. Trước [S2].\nHà Nội ban hành cơ chế ưu đãi đầu tư, tạo việc làm cho người sau cai nghiện 5 ngày trước (Chinhphu.vn) - HĐND thành phố Hà Nội đã ban hành Nghị quyết quy định chính sách ưu đãi, hỗ trợ đối với doanh nghiệp, tổ chức, cá nhân tham gia đầu tư cơ sở cai nghiện ma túy và sử dụng lao động là người sau cai nghiện ma túy. Việt Nam phối hợp với Trung Quốc, Lào, Myanm [S3].\n\nNguồn:\n- [S1] nghi-dinh-116-2021-cai-nghien-ma-tuy.md | score=26.4034\n- [S2] 2023-le-hang-dantri.md | score=24.3788\n- [S3] 2018-chau-viet-cuong-chinhphu.md | score=19.9698\n- [S4] nghi-dinh-105-2021.md | score=18.5353\n- [S5] quyet-dinh-140-2024-phong-chong-ma-tuy-thanh-thieu-nien.md | score=11.1143",
+  "intent": "legal",
+  "search_queries": [
+    "Luật phòng chống ma túy quy định gì về cai nghiện?",
+    "Luật phòng chống ma túy quy định gì về cai nghiện? quy dinh phap luat hinh phat ma tuy"
+  ],
+  "evidence": [
+    {
+      "id": "S1",
+      "source": "nghi-dinh-116-2021-cai-nghien-ma-tuy.md",
+      "score": 26.4034,
+      "content": "--- title: \"Nghị định 116/2021/NĐ-CP về cai nghiện ma túy\" source_url: \"https://vanban.chinhphu.vn/?docid=204866&pageid=27160\" crawled_at: \"2026-06-08T04:54:26.093305+00:00\" source_type: \"legal_web_text\" html_title: \"Nghị định số 116/2021/NĐ-CP của Chính phủ: Quy định chi tiết một số điều của Luật Phòng, chống ma túy, Luật Xử lý vi phạm hành chính về cai nghiện ma túy và quản lý sau cai nghiện ma túy\" text_page_url: \"https://vanban.chinhphu.vn/?pageid=27160&docid=218321\" --- # Nghị định 116/2021/NĐ-CP về cai nghiện ma túy",
+      "citation": "nghi dinh 116 2021 cai nghien ma tuy, 2021"
+    },
+    {
+      "id": "S2",
+      "source": "2023-le-hang-dantri.md",
+      "score": 24.3788,
+      "content": "## (Dân trí) - Theo luật sư, người thực hiện hành vi mua bán ma túy là lỗi cố ý, người phạm tội biết rõ thứ mình mua bán là chất cấm, biết rõ việc mua bán ma túy là trái pháp luật nhưng vẫn thực hiện. Công an quận Đống Đa, TP Hà Nội, vừa ra quyết định khởi tố bị can đối với Bùi Thị Lệ Hằng (48 tuổi, ở quận Đống Đa) về tội Mua bán trái phép chất ma túy. Trước đó, tối 10/3, Đội Cảnh sát điều tra tội phạm về ma túy phát hiện Lệ Hằng đang mua bán trái phép ma túy trước số nhà 104 Khâm Thiên. Công an thu giữ tang vật gần 0,7gram ma túy tổng hợp. Tại trụ sở điều tra, Hằng khai nhận đã mua số ma túy trên với giá 500.000 đồng để bán lại kiếm lời. '%20%2F%3E%3C%2Fsvg%3E) Bùi Thị Lệ Hằng (Ảnh: Công an Hà Nội). Theo dõi vụ việc, luật sư Hà Thị Khuyên (Trưởng Văn phòng luật sư Nhân Chính) cho biết, theo quy định pháp luật, hành vi mua bán trái phép chất ma túy được hiểu là hành vi trao đổi trái phép chất ma túy dưới bất kỳ hình thức nào. \"Về mặt chủ quan của tội phạm thì lỗi của người thực hiện hành vi mua bán trái phép chất ma túy là lỗi cố ý, người phạm tội biết rõ thứ mình mua bán là chất ma ",
+      "citation": "2023 le hang dantri, 2023"
+    },
+    {
+      "id": "S3",
+      "source": "2018-chau-viet-cuong-chinhphu.md",
+      "score": 19.9698,
+      "content": "Hà Nội ban hành cơ chế ưu đãi đầu tư, tạo việc làm cho người sau cai nghiện 5 ngày trước (Chinhphu.vn) - HĐND thành phố Hà Nội đã ban hành Nghị quyết quy định chính sách ưu đãi, hỗ trợ đối với doanh nghiệp, tổ chức, cá nhân tham gia đầu tư cơ sở cai nghiện ma túy và sử dụng lao động là người sau cai nghiện ma túy. Việt Nam phối hợp với Trung Quốc, Lào, Myanmar mở đợt cao điểm trấn áp tội phạm ma túy 6 ngày trước (Chinhphu.vn) - Chiều 2/6, tại Hà Nội đã diễn ra Hội nghị triển khai Cao điểm tuyên truyền, phối hợp tấn công trấn áp tội phạm ma túy giữa Việt Nam, Trung Quốc, Lào, Myanmar. Thượng tướng Nguyễn Văn Long, Ủy viên Trung ương Đảng, Thứ trưởng, Thủ trưởng Cơ quan Cảnh sát điều tra Bộ Công an dự và phát biểu chỉ đạo. Nâng cao hiệu quả đấu tranh với tội phạm ma túy trên tuyến biên giới 6 ngày trước (Chinhphu.vn) - Trong Tháng hành động phòng, chống ma túy năm 2026, Chi cục Hải quan khu vực XI sẽ triển khai đồng bộ các giải pháp nhằm nâng cao hiệu quả công tác đấu tranh với tội phạm ma túy trên địa bàn Hà Tĩnh, Nghệ An. Khen thưởng lực lượng phá thành công chuyên án ma túy xuyên bi",
+      "citation": "2018 chau viet cuong chinhphu, 2018"
+    },
+    {
+      "id": "S4",
+      "source": "nghi-dinh-105-2021.md",
+      "score": 18.5353,
+      "content": "--- title: \"Nghị định 105/2021/NĐ-CP\" source_url: \"https://vanban.chinhphu.vn/?docid=204678&pageid=27160\" crawled_at: \"2026-06-08T04:54:24.644878+00:00\" source_type: \"legal_web_text\" html_title: \"Nghị định số 105/2021/NĐ-CP của Chính phủ: Quy định chi tiết và hướng dẫn thi hành một số điều của Luật phòng, chống ma túy\" text_page_url: \"https://vanban.chinhphu.vn/?pageid=27160&docid=218321\" --- # Nghị định 105/2021/NĐ-CP",
+      "citation": "nghi dinh 105 2021, 2021"
+    },
+    {
+      "id": "S5",
+      "source": "quyet-dinh-140-2024-phong-chong-ma-tuy-thanh-thieu-nien.md",
+      "score": 11.1143,
+      "content": "--- title: \"Quyết định 140/QĐ-TTg về phòng, chống ma túy trong thanh, thiếu niên\" source_url: \"https://vanban.chinhphu.vn/?docid=209668&pageid=27160\" crawled_at: \"2026-06-08T04:54:36.052748+00:00\" source_type: \"legal_web_text\" html_title: \"Quyết định số 140/QĐ-TTg của Thủ tướng Chính phủ: Ban hành Chương trình phòng, chống ma túy trong thanh, thiếu niên đến năm 2030\" text_page_url: \"\" --- # Quyết định 140/QĐ-TTg về phòng, chống ma túy trong thanh, thiếu niên",
+      "citation": "quyet dinh 140 2024 phong chong ma tuy thanh thieu nien, 2024"
+    }
+  ],
+  "trace": [
+    {
+      "worker": "query_planner",
+      "status": "ok",
+      "detail": "intent=legal, search_queries=2",
+      "latency_ms": 0.09
+    },
+    {
+      "worker": "retrieval_worker",
+      "status": "ok",
+      "detail": "retrieved=5 chunks",
+      "latency_ms": 160.24
+    },
+    {
+      "worker": "evidence_worker",
+      "status": "ok",
+      "detail": "selected=5 evidence chunks",
+      "latency_ms": 0.29
+    },
+    {
+      "worker": "answer_worker",
+      "status": "fallback",
+      "detail": "LLM generation failed, using extractive answer: Error code: 403 - {'error': {'message': 'You are not allowed to sample from this model', 'type': 'invalid_request_error', 'param': None, 'code': None}}"
+    },
+    {
+      "worker": "answer_worker",
+      "status": "ok",
+      "detail": "answer_chars=1584",
+      "latency_ms": 4299.21
+    }
+  ],
+  "metrics": {
+    "total_latency_ms": 4459.85,
+    "workers": 4,
+    "retrieved": 5,
+    "evidence": 5,
+    "intent": "legal"
+  }
+}
