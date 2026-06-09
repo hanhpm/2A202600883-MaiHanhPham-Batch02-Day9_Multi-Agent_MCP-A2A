@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from uuid import uuid4
 
 from langchain_core.messages import HumanMessage
@@ -49,36 +50,20 @@ class CustomerAgentExecutor(AgentExecutor):
         )
 
         try:
-            # Build a per-request graph so the tool closure captures this request's IDs
-            graph = build_graph(
-                trace_id=trace_id,
-                context_id=context_id,
-                depth=depth,
-            )
-
-            result = await graph.ainvoke(
-                {"messages": [HumanMessage(content=question)]},
-                config={"configurable": {"thread_id": context_id}},
-            )
-
-            # Extract the last AI message from the result
-            answer = ""
-            for msg in reversed(result.get("messages", [])):
-                if hasattr(msg, "content") and msg.content:
-                    if not isinstance(msg, HumanMessage):
-                        # Skip ToolMessages, only want final AIMessage
-                        from langchain_core.messages import AIMessage
-                        if isinstance(msg, AIMessage):
-                            answer = msg.content
-                            break
-
-            if not answer:
-                # Fallback: any non-human message content
-                for msg in reversed(result.get("messages", [])):
-                    content = getattr(msg, "content", "")
-                    if content and not isinstance(msg, HumanMessage):
-                        answer = content
-                        break
+            if _fast_delegate_enabled():
+                answer = await self._delegate_directly(
+                    question=question,
+                    context_id=context_id,
+                    trace_id=trace_id,
+                    depth=depth,
+                )
+            else:
+                answer = await self._run_react_customer_graph(
+                    question=question,
+                    context_id=context_id,
+                    trace_id=trace_id,
+                    depth=depth,
+                )
 
             if not answer:
                 answer = "I was unable to process your legal question at this time."
@@ -114,6 +99,76 @@ class CustomerAgentExecutor(AgentExecutor):
                 )
             )
 
+    async def _delegate_directly(
+        self,
+        *,
+        question: str,
+        context_id: str,
+        trace_id: str,
+        depth: int,
+    ) -> str:
+        """Fast path: skip Customer ReAct LLM and delegate directly to Law Agent."""
+        from common.a2a_client import delegate
+        from common.registry_client import discover
+
+        await emit_event(
+            trace_id=trace_id,
+            context_id=context_id,
+            agent="Customer Agent",
+            event="fast_delegate",
+            detail="Skipping Customer ReAct loop and delegating directly to Law Agent",
+            tool="Registry discover + A2A",
+        )
+        endpoint = await discover("legal_question")
+        return await delegate(
+            endpoint=endpoint,
+            question=question,
+            context_id=context_id,
+            trace_id=trace_id,
+            depth=depth + 1,
+        )
+
+    async def _run_react_customer_graph(
+        self,
+        *,
+        question: str,
+        context_id: str,
+        trace_id: str,
+        depth: int,
+    ) -> str:
+        """Original Customer Agent ReAct behavior."""
+        # Build a per-request graph so the tool closure captures this request's IDs
+        graph = build_graph(
+            trace_id=trace_id,
+            context_id=context_id,
+            depth=depth,
+        )
+
+        result = await graph.ainvoke(
+            {"messages": [HumanMessage(content=question)]},
+            config={"configurable": {"thread_id": context_id}},
+        )
+
+        # Extract the last AI message from the result
+        answer = ""
+        for msg in reversed(result.get("messages", [])):
+            if hasattr(msg, "content") and msg.content:
+                if not isinstance(msg, HumanMessage):
+                    # Skip ToolMessages, only want final AIMessage
+                    from langchain_core.messages import AIMessage
+                    if isinstance(msg, AIMessage):
+                        answer = msg.content
+                        break
+
+        if not answer:
+            # Fallback: any non-human message content
+            for msg in reversed(result.get("messages", [])):
+                content = getattr(msg, "content", "")
+                if content and not isinstance(msg, HumanMessage):
+                    answer = content
+                    break
+        return answer
+
     async def cancel(self, context: RequestContext, event_queue: EventQueue) -> None:
         task_id = context.task_id or str(uuid4())
         context_id = context.context_id or str(uuid4())
@@ -131,3 +186,8 @@ class CustomerAgentExecutor(AgentExecutor):
                     parts.append(text)
             return "\n".join(parts)
         return ""
+
+
+def _fast_delegate_enabled() -> bool:
+    value = os.getenv("CUSTOMER_FAST_DELEGATE", "1").strip().lower()
+    return value not in {"0", "false", "no", "off"}

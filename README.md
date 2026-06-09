@@ -153,6 +153,20 @@ between the learning modes for diagrams 02-09: A2A vs traditional agents,
 protocol details, system architecture, Law Agent graph, request flow, A2A intro,
 core concepts, and interaction flow.
 
+Bonus latency demo:
+
+```powershell
+# HTML demo for Stage 5 interactions and latency metrics
+http://localhost:8000/agent_stage5_demo.html
+
+# Measure full Stage 5 latency
+Measure-Command { uv run python test_client.py } | Select-Object TotalSeconds
+```
+
+The Customer Agent supports `CUSTOMER_FAST_DELEGATE=1` to skip the extra Customer
+ReAct LLM loop and delegate directly to the Law Agent. See `LATENCY_REPORT.md`
+for the measured before/after latency.
+
 The Law, Tax, and Compliance agents can reuse the Day 8 RAG corpus from the
 sibling project `2A202600883-MaiHanhPham-Day08_RAG_pipeline_cohort2`. The shared
 retriever reads cleaned markdown under `data/standardized/` and falls back

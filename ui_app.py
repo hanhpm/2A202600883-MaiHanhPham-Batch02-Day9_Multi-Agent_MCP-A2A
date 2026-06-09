@@ -116,6 +116,11 @@ async def index() -> str:
     return HTML
 
 
+@app.get("/agent_stage5_demo.html", response_class=HTMLResponse)
+async def stage5_demo_html() -> str:
+    return (PROJECT_DIR / "agent_stage5_demo.html").read_text(encoding="utf-8")
+
+
 @app.get("/api/modes")
 async def modes() -> dict:
     return {"modes": MODES}
